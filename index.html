@@ -1,0 +1,147 @@
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Major+Mono+Display&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #000;
+            color: #fff;
+            text-align: center;
+            font-family: 'Major Mono Display', monospace;
+            text-transform: uppercase;
+            padding-top: 2em;
+
+            background: linear-gradient(to bottom,
+                    #000,
+                    #000 50%,
+                    #222 50%,
+                    #222);
+            background-size: 100% 4px;
+            animation: gradientMove 200ms ease infinite;
+        }
+
+        .emergency {
+            color: red;
+        }
+
+        h1,
+        small {
+            text-shadow: 3px 2px 2px rgba(251, 12, 12, 1), 0px -1px 3px rgba(12, 79, 251, .5), -3px 0px 2px rgba(52, 251, 12, 1);
+            animation: chromaticMove 4500ms ease infinite, pulse ease 200ms infinite;
+
+        }
+
+        h1 {
+            font-size: 6em;
+        }
+
+        small {
+            display: block;
+            text-transform: initial;
+            font-size: 24px;
+
+        }
+
+        @keyframes gradientMove {
+            0% {
+                background-size: 100% 4px
+            }
+
+            50% {
+                background-size: 100% 2px
+            }
+
+            100% {
+                background-size: 100% 4px
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: .9;
+                transform: skewX(.5deg);
+            }
+
+            25% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: .9;
+            }
+
+            75% {
+                opacity: 1;
+                transform: skewX(.5deg);
+            }
+
+            100% {
+                opacity: .9;
+            }
+        }
+
+        @keyframes chromaticMove {
+            0% {
+                text-shadow: 3px 2px 2px rgba(251, 12, 12, 1), 0px -1px 3px rgba(12, 79, 251, .5), 0px 0px -2px rgba(52, 251, 12, 1);
+            }
+
+            50% {
+                text-shadow: 3px 2px 2px rgba(251, 12, 12, 1), 0px -1px 3px rgba(12, 79, 251, .5), -3px 2px 3px rgba(52, 251, 12, 1);
+            }
+
+            100% {
+                text-shadow: 3px 2px 2px rgba(251, 12, 12, 1), 0px -1px 3px rgba(12, 79, 251, .5), 2px -1px 2px rgba(52, 251, 12, 1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <small>
+        Hyperbolic time activated
+    </small>
+    <h1 id="digits">
+        30:00.000
+    </h1>
+    <script>
+
+        function formatDigits(num, digits) {
+            return String(num).padStart(digits, '0');
+        }
+
+        function countDown(seconds) {
+            const start = (new Date()).getTime() / 1000;
+
+            // Update at 60fps
+            const timer = setInterval(displayAndUpdate, 16);
+
+            function displayAndUpdate() {
+                const now = (new Date()).getTime() / 1000;
+                const diff = now - start; // This gets the time since start in seconds
+
+                const hypSecs = (1800 * Math.pow((1 - 0.003), diff)) - 0.21717;
+
+                if (hypSecs <= 0) {
+                    cancelInterval(timer);
+                    return;
+                }
+
+                const mins = formatDigits(Math.floor(hypSecs / 60), 2);
+                const secs = formatDigits(Math.floor(hypSecs) % 60, 2);
+                const ms = formatDigits(Math.floor((hypSecs * 1000) % 1000), 3);
+                document.getElementById("digits").innerHTML = `${mins}:${secs}.${ms}`;
+                if (hypSecs <= 60) {
+                    if (Math.floor(diff) % 2 == 0) {
+                        document.getElementById("digits").classList.add('emergency');
+                    } else {
+                        document.getElementById("digits").classList.remove('emergency');
+                    }
+                }
+
+            }
+        }
+
+        (function () {
+            countDown(1800);
+        }());
+    </script>
+
+</body>
